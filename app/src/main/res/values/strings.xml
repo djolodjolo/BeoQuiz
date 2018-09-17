@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">BeoQuiz</string>
+
+    <string name="true_button">TRUE</string>
+    <string name="false_button">FALSE</string>
+    <string name="correct_toast">Correct!</string>
+    <string name="incorrect_toast">Incorrect!</string>
+    <string name="next_button">Next</string>
+
+    <string name="question_glavni">Beograd je glavni grad Srbije.</string>
+    <string name="question_reka">Beograd je na uscu Save i Dunava.</string>
+    <string name="question_rim">U doba Rimskog carstva, Beograd se zvao Taurunum.</string>
+    <string name="question_pobednik">Pobednik je visok 28 metara.</string>
+    <string name="question_kafana">Prva kafana je otvorena u Beogradu.</string>
+    <string name="question_stanovnik">U Beogradu zivi oko milion stanovnika.</string>
+    <string name="question_hram">Hram svetog Save je najveci hram na Balkanu</string>
+    <string name="question_tunel">Ispod Beograda se nalaze podzemni tuneli.</string>
+    <string name="question_univerzitet">Beogradski univerzitet je najgori.</string>
+
+</resources>
