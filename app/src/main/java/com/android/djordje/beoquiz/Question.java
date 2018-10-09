@@ -1,9 +1,14 @@
 package com.android.djordje.beoquiz;
 
-public class Question {
+import java.io.Serializable;
+
+public class Question implements Serializable{
+//implements serializable to save disabled buttons after rotation
 
     private int mTextResId;
     private boolean mAnswerTrue;
+
+    private boolean mAlreadyAnswered;
 
     public Question(int textResId, boolean answerTrue){
         mTextResId = textResId;
@@ -22,5 +27,14 @@ public class Question {
     }
     public void setAnswerTrue(boolean answerTrue) {
         mAnswerTrue = answerTrue;
+    }
+
+
+    public boolean isAlreadyAnswered() {
+        return mAlreadyAnswered;
+    }
+
+    public void setAlreadyAnswered(boolean alreadyAnswered) {
+        mAlreadyAnswered = alreadyAnswered;
     }
 }

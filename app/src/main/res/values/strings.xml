@@ -7,6 +7,12 @@
     <string name="incorrect_toast">Incorrect!</string>
     <string name="next_button">Next</string>
     <string name="previous_button">Previous</string>
+    <string name="score_toast">GJ GJ GJ GJ GJ GJ</string>
+
+    <string name="warning_text">Are you sure you want to do this?</string>
+    <string name="show_answer_button">Show Answer</string>
+    <string name="cheat_button">Cheat!</string>
+    <string name="judgement_toast">Cheating is wrong.</string>
 
     <string name="question_glavni">Beograd je glavni grad Srbije.</string>
     <string name="question_reka">Beograd je na uscu Save i Dunava.</string>

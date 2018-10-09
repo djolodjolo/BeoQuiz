@@ -1,5 +1,8 @@
 package com.android.djordje.beoquiz;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,11 +17,13 @@ public class QuizActivity extends AppCompatActivity {
 
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final int REQUEST_CODE_CHEAT = 0;
 
     private Button mTrueButton;
     private Button mFalseButton;
     private ImageButton mNextButton;
     private ImageButton mPreviousButton;
+    private Button mCheatButton;
     private TextView mQuestionTextView;
 
     private Question[] mQuestionBank = new Question[] {
@@ -34,6 +39,11 @@ public class QuizActivity extends AppCompatActivity {
     };
 
     private int mCurrentIndex = 0;
+    private boolean mIsCheater;
+
+    //vars for score
+    private int mAnswersCount = 0;
+    private int mCorrectAnswersCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +52,10 @@ public class QuizActivity extends AppCompatActivity {
         setContentView(R.layout.activity_quiz);
 
         if(savedInstanceState != null){
+            //keep current question after rotation
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            //keep button disabled after rotation
+            mQuestionBank = (Question[]) savedInstanceState.getSerializable("Questions");
         }
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
@@ -81,6 +94,7 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                mIsCheater = false;
                 updateQuestion();
             }
         });
@@ -98,7 +112,33 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+        mCheatButton = (Button) findViewById(R.id.cheat_button);
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //START CHEATING
+                //Intent intent = new Intent(QuizActivity.this, CheatActivity.class);
+                boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+                Intent intent = CheatActivity.newIntent(QuizActivity.this, answerIsTrue);
+                startActivityForResult(intent, REQUEST_CODE_CHEAT);
+            }
+        });
+
         updateQuestion();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(resultCode != Activity.RESULT_OK){
+            return;
+        }
+
+        if(resultCode == REQUEST_CODE_CHEAT){
+            if(data == null){
+                return;
+            }
+            mIsCheater = CheatActivity.wasAnswerShown(data);
+        }
     }
 
     @Override
@@ -123,7 +163,10 @@ public class QuizActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInstanceState){
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
+        //save current question
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        //save disabled buttons
+        savedInstanceState.putSerializable("Questions", mQuestionBank);
     }
 
     @Override
@@ -142,6 +185,13 @@ public class QuizActivity extends AppCompatActivity {
     private void updateQuestion(){
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
+
+        //enable or disable button on question appearance
+        mTrueButton.setEnabled(!mQuestionBank[mCurrentIndex].isAlreadyAnswered());
+        mFalseButton.setEnabled(!mQuestionBank[mCurrentIndex].isAlreadyAnswered());
+
+        //TODO score
+        mAnswersCount++;
     }
 
     private void checkAnswer(boolean userPressedTrue){
@@ -149,13 +199,32 @@ public class QuizActivity extends AppCompatActivity {
 
         int messageResId = 0;
 
-        if(userPressedTrue == answerIsTrue){
-            messageResId = R.string.correct_toast;
+        if(mIsCheater){
+            //TODO
+            messageResId = R.string.judgement_toast;
         }
-        else{
-            messageResId = R.string.incorrect_toast;
+        else {
+            if (userPressedTrue == answerIsTrue) {
+                messageResId = R.string.correct_toast;
+                mCorrectAnswersCount++;
+            } else {
+                messageResId = R.string.incorrect_toast;
+            }
         }
+        mAnswersCount++;
+
+        //set question as answered
+        mQuestionBank[mCurrentIndex].setAlreadyAnswered(true);
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+        //disable buttons
+        mTrueButton.setEnabled(!mQuestionBank[mCurrentIndex].isAlreadyAnswered());
+        mFalseButton.setEnabled(!mQuestionBank[mCurrentIndex].isAlreadyAnswered());
+
+        //TODO show score
+        if(mAnswersCount == mQuestionBank.length) {
+            messageResId = R.string.score_toast;
+            Toast.makeText(this, messageResId, Toast.LENGTH_LONG);
+        }
     }
 }
